@@ -11,8 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: common
     env:
-     DOCKER_USER: "$DOCKER_USER"
+     DOCKER_USER: ${{ vars.DOCKER_USER }}
      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+     DOCKER_IMAGE_NAME: ${{ vars.DOCKER_IMAGE_NAME }}
    
     steps:
       - name: Checkout code
@@ -39,6 +40,12 @@ jobs:
           # Username used to log against the Docker registry
           username: ${{ vars.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: ${{ vars.DOCKER_USER }}/${{ vars.DOCKER_IMAGE_NAME }}:latest
           
 
       
