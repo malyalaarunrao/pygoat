@@ -15,3 +15,5 @@ bin
 # vscode
 .vscode/
 
+#windows
+**/.DS_Store
