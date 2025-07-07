@@ -45,7 +45,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: ${{ vars.DOCKER_USER }}/${{ vars.DOCKER_IMAGE_NAME }}:latest
+          tags: ${{ vars.DOCKER_USER }}/${{ vars.DOCKER_IMAGE_NAME }}:${{github.run_id}}
 
       - name: Scan image with docker scout
         uses: docker/scout-action@v1
