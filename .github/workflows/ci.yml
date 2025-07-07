@@ -46,6 +46,18 @@ jobs:
         with:
           push: true
           tags: ${{ vars.DOCKER_USER }}/${{ vars.DOCKER_IMAGE_NAME }}:latest
-          
+
+      - name: Scan image with docker scout
+        uses: docker/scout-action@v1
+        with:
+          command: cves, recommendations
+          image: ${{ vars.DOCKER_USER }}/${{ vars.DOCKER_IMAGE_NAME }}:latest
+          sarif-file: docker-scout-sarif.output.json
+          summary: true
+
+      - name: Upload docker scout with SARIF result
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: docker-scout-sarif.output.json
 
       
