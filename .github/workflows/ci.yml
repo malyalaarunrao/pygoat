@@ -37,7 +37,7 @@ jobs:
           # registry: YOUR_REGISTRY
           # Currently uses docker hub, no information registry is needed.
           # Username used to log against the Docker registry
-          username: ${{ secrets.DOCKER_USER }}
+          username: ${{ vars.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           
 
