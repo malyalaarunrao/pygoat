@@ -51,11 +51,16 @@ jobs:
         uses: docker/scout-action@v1
         with:
           command: cves, recommendations
-          image: ${{ vars.DOCKER_USER }}/${{ vars.DOCKER_IMAGE_NAME }}:latest
+          image: ${{ vars.DOCKER_USER }}/${{ vars.DOCKER_IMAGE_NAME }}:${{github.run_id}}
+          only-severities: critical,high
           sarif-file: docker-scout-sarif.output.json
           summary: true
 
+          # fail the run if vunrabilites is found
+          exit-code: true 
+
       - name: Upload docker scout with SARIF result
+        if: ${{ always() }} # run this even docker scout is resulteda failed
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: docker-scout-sarif.output.json
