@@ -11,9 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: common
     env:
-      DOCKER_USER: "$DOCKER_USER"
-      DOCKER_PASSWORD: "${{ secrets.DOCKER_PASSWORD }}"
-
+     DOCKER_USER: ${{ secrets.DOCKER_USER }}
+     DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+   
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
