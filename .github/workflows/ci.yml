@@ -34,6 +34,7 @@ jobs:
             -Dsonar.projectKey=malyalaarunrao_pygoat
           
   docker-build:
+    if: false # Disabling this while working on other things.
     runs-on: ubuntu-latest
     environment: common
     env:
