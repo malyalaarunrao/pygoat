@@ -9,7 +9,7 @@ on:
 jobs:
   sast-scan:
     runs-on: ubuntu-latest
-   
+    environment: common
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -23,6 +23,15 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+
+      - name: SonarQube Cloud Scan
+      - uses: SonarSource/sonarqube-scan-action@v4.2.1
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR-QUBE }} 
+        with:
+          args: >
+            -Dsonar.organization=malyalaarunrao
+            -Dsonar.projectKey=malyalaarunrao_pygoat
           
   docker-build:
     runs-on: ubuntu-latest
