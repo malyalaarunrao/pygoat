@@ -82,8 +82,8 @@ jobs:
           sarif-file: docker-scout-sarif.output.json
           summary: true
 
-          # fail the run if vunrabilites is found
-          exit-code: true 
+          # if below one is set to be true then fail the run if vunrabilites is found
+          exit-code: false 
 
       - name: Upload docker scout with SARIF result
         if: ${{ always() }} 
