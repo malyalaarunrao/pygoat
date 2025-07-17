@@ -96,10 +96,30 @@ jobs:
 
   terraform-scan:
     runs-on: ubuntu-latest
-
+    env:
+      TF_HOME: ${{ github.workspace }}/automation/iac/app_service/terraform
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
+      
+      - name: Run Trivy vulnerability scanner in IaC code
+        uses: aquasecurity/trivy-action@0.31.0
+        with:
+          scan-type: config
+          scan-ref:  ${{ env.TF_HOME }}
+          format: sarif
+          hide-progress: true
+          output: trivy-results.sarif
+          exit-code: '1'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Upload trivy scan results to GitHub Security tab
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
+
 
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v4.6.2
@@ -107,7 +127,7 @@ jobs:
     
           name: terraform
    
-          path: automation/iac/app_service/terraform
+          path:  ${{ env.TF_HOME }}
           if-no-files-found: error
           retention-days: 90
           overwrite: false
