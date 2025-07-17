@@ -106,7 +106,7 @@ jobs:
           scan-type: config
           scan-ref: ${{ env.TF_HOME }}
           format: sarif
-          hide-progress: true
+          hide-progress: false
           output: trivy-results.sarif
           exit-code: '1'
           severity: 'CRITICAL,HIGH'
