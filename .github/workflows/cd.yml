@@ -5,67 +5,58 @@ on:
     inputs:
       ci_run_id:
         description: 'CI Run ID to pull artifacts from'
-        required: false   # Optional since it's not needed if triggered by workflow_run
+        required: false
         type: string
 
   workflow_run:
     workflows: ["CI-Pipeline"]
     types:
       - completed
+
+env:
+  TF_HOME: infra/terraform
+
 jobs:
-  test:
+  CD:
+    name: Continuous Deployment
     runs-on: ubuntu-latest
-    environment: common    # <-- Add this line to get environment secrets like TF_API_TOKEN
-    env:
-      TF_HOME: terraform
+
     steps:
-      - name: Download the Terraform Artifact
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set EFFECTIVE_RUN_ID (workflow_dispatch or workflow_run fallback)
+        id: set-run-id
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "run_id=${{ github.event.inputs.ci_run_id }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "run_id=${{ github.event.workflow_run.id }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Download Terraform Artifact
         uses: actions/download-artifact@v4.3.0
         with:
           name: terraform
           path: ${{ env.TF_HOME }}
-          run-id: ${{ github.event.workflow_run.id }}   # Automatically get CI run id
+          run-id: ${{ steps.set-run-id.outputs.run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: HashiCorp - Setup Terraform
-        uses: hashicorp/setup-terraform@v2.0.3
-        with:
-          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+      - name: List downloaded Terraform files
+        run: ls -R ${{ env.TF_HOME }}
 
-      - name: Run Terraform
-        run: |
-          cd ${{ env.TF_HOME }}
-          export TF_WORKSPACE="pygoat-test"
-          terraform init
-          terraform apply -var-file="variable_values/test.tfvars" -input=false -auto-approve
-          cd -
+      - name: Terraform Init
+        working-directory: ${{ env.TF_HOME }}
+        run: terraform init
 
-  prod:
-    needs: test
-    runs-on: ubuntu-latest
-    environment: common    # <-- Add this line to get environment secrets like TF_API_TOKEN
-    env:
-      TF_HOME: terraform
-    steps:
-      - name: Download the Terraform Artifact
-        uses: actions/download-artifact@v4.3.0
-        with:
-          name: terraform
-          path: ${{ env.TF_HOME }}
-          run-id: ${{ github.event.workflow_run.id }}   # Automatically get CI run id
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Terraform Validate
+        working-directory: ${{ env.TF_HOME }}
+        run: terraform validate
 
-      - name: HashiCorp - Setup Terraform
-        uses: hashicorp/setup-terraform@v2.0.3
-        with:
-          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+      - name: Terraform Plan
+        working-directory: ${{ env.TF_HOME }}
+        run: terraform plan
 
-      - name: Run Terraform
-        run: |
-          cd ${{ env.TF_HOME }}
-          export TF_WORKSPACE="pygoat-prod"
-          terraform init
-          terraform apply -var-file="variable_values/prod.tfvars" -input=false -auto-approve
-          cd -
-
-        
+      - name: Terraform Apply
+        working-directory: ${{ env.TF_HOME }}
+        run: terraform apply -auto-approve
