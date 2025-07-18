@@ -9,6 +9,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    environment: common    # <-- Add this line to get environment secrets like TF_API_TOKEN
     env:
       TF_HOME: terraform
     steps:
@@ -17,7 +18,7 @@ jobs:
         with:
           name: terraform
           path: ${{ env.TF_HOME }}
-          run-id: ${{ github.event.workflow_run.id }}   # <-- Automatically gets CI run id
+          run-id: ${{ github.event.workflow_run.id }}   # Automatically get CI run id
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Verify Terraform Artifact Contents
