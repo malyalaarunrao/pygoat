@@ -100,6 +100,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: HashiCorp - Setup Terraform
+
+        uses: hashicorp/setup-terraform@v2.0.3
+        with:
+          # The API token for a Terraform Cloud/Enterprise instance to place within the credentials block of the Terraform CLI configuration file.
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+
+      - name: Terraform formatting and Validate Check
+        run: |
+          cd STF_HOME
+          terraform init
+          terraform fmt -check
+          terraform validate
+          cd -
+
       - name: Run Trivy vulnerability scanner in IaC code
         uses: aquasecurity/trivy-action@0.31.0
         with:
