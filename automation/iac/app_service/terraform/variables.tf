@@ -34,12 +34,3 @@ variable "python_version" {
   default     = "3.12"
 }
 
-variable "ARM_CLIENT_ID" {
-  type        = string
-  description = "Azure Client ID"
-}
-
-variable "ARM_CLIENT_SECRET" {
-  type        = string
-  description = "Azure Client Secret"
-}
