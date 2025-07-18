@@ -1,12 +1,11 @@
 name: CI-Pipeline
 
 on:
- workflow_dispatch:
-  inputs:
-    ci_run_id:
-      description: 'Run ID of the CI pipeline used to find the artifacts'
-      required: true
-
+  push:
+    branches:
+      - master 
+  workflow_dispatch:
+  
 jobs:
   sast-scan:
     if: false # Disabling this while working on oher things.
