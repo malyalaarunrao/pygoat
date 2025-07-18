@@ -1,11 +1,11 @@
 name: CD-pipeline
 
 on:
-workflow_dispatch:
-  inputs:
-    ci_run_id:
-      description: 'Run ID of the CI pipeline used to find the artifacts'
-      required: true
+  workflow_dispatch:
+    inputs:
+      ci_run_id:
+        description: 'Run ID of the CI pipeline used to find the artifacts'
+        required: true
 
 jobs:
   test:
@@ -23,10 +23,11 @@ jobs:
 
       - name: Verify Terraform Artifact Contents
         run: ls ${{ env.TF_HOME }}
+
   prod:
     needs: [test]
     runs-on: ubuntu-latest
     steps:
-      - name: Test Step
+      - name: Deploy Step
         run: |
           echo 'Hello world!'
