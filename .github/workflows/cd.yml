@@ -33,7 +33,7 @@ jobs:
 
 
       - name: Run Terraform
-        run:
+        run: |
           cd ${{ env.TF_HOME }}
           terraform init
           terraform workspace select pygoat-test
