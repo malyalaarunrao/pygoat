@@ -9,7 +9,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    uses: common   # for access to ${{ secrets.TF_API_TOKEN }}
+    uses: common   # for acces to ${{ secrets.TF_API_TOKEN }}
     env:
       TF_HOME: terraform
     steps:
