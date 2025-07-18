@@ -8,7 +8,7 @@ on:
   
 jobs:
   sast-scan:
-    if: false # Disabling this while working on other things.
+    #if: false # Disabling this while working on other things.
     runs-on: ubuntu-latest
     environment: common
     steps:
@@ -35,7 +35,7 @@ jobs:
             -Dsonar.projectKey=malyalaarunrao_pygoat
 
   docker-build:
-    if: false # Disabling this while working on other things.
+    #if: false # Disabling this while working on other things.
     runs-on: ubuntu-latest
     environment: common
     env:
