@@ -12,21 +12,23 @@ jobs:
     env:
       TF_HOME: ${{ github.workspace }}/automation/iac/app_service/terraform
       TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
-      TF_WORKSPACE: pygoat-test   # set workspace here, matching your desired workspace name
+      TF_WORKSPACE: pygoat-test
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
   
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2.0.3
         with:
           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
   
+      - name: Debug Terraform credentials file
+        run: cat ~/.terraform.d/credentials.tfrc.json || echo "No credentials file found"
+  
       - name: Terraform Init & Validate
         run: |
           cd $TF_HOME
           terraform init
-          terraform workspace select $TF_WORKSPACE
+          terraform workspace select $TF_WORKSPACE -or-create
           terraform fmt -check
           terraform validate
   
