@@ -8,7 +8,7 @@ on:
   
 jobs:
   sast-scan:
-    if: false # Disabling this while working on other things.
+    if: false # Disabling this while working on oher things.
     runs-on: ubuntu-latest
     environment: common
     steps:
