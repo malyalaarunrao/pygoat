@@ -108,13 +108,14 @@ jobs:
           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
 
-      #- name: Terraform formatting and Validate Check
-       # run: |
-          #cd $TF_HOME
-          #terraform init
-          #terraform fmt -check
-          #terraform validate
-          #cd -
+      - name: Terraform formatting and Validate Check
+        run: |
+          cd $TF_HOME
+          export TF_WORKSPACE="pygoat-test"
+          terraform init
+          terraform fmt -check
+          terraform validate
+          cd -
 
 
       - name: Run Trivy vulnerability scanner in IaC code
