@@ -1,12 +1,10 @@
 name: CD-pipeline
 
 on:
-  workflow_dispatch:
-    inputs:
-      ci_run_id:
-        description: 'CI Run ID to pull artifacts from'
-        required: false   # Optional since it's not needed if triggered by workflow_run
-        type: string
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
 
   workflow_run:
     workflows: ["CI-Pipeline"]
