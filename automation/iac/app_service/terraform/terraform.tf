@@ -10,8 +10,10 @@ terraform {
   #configure terraform
   cloud {
     organization = "arunraomalyala"
-    workspaces {
-      name = "dev-arun"
-    }
+    
+    #workspaces slectin is done via TF_WORKSPACE env variable
+    #workspaces {
+    #  name = "dev-arun"
+    #}
   }
 }

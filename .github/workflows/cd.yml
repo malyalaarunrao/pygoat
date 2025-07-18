@@ -34,7 +34,7 @@ jobs:
           cd ${{ env.TF_HOME }}
           export TF_WORKSPACE="pygoat-test"
           terraform init
-          terraform apply -auto-approve
+          terraform apply -var-file="variable_values/test.tfvars" -input=false -auto-approve
           cd -
 
   prod:
