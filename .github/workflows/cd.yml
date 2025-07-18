@@ -2,14 +2,13 @@ name: CD-pipeline
 
 on:
   workflow_run:
-    workflows: ["CI-pipeline"] # exact name of your CI workflow
+    workflows: ["CI-Pipeline"]  # Exact name of your CI workflow (case sensitive)
     types:
       - completed
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    uses: common   # for acces to ${{ secrets.TF_API_TOKEN }}
     env:
       TF_HOME: terraform
     steps:
@@ -18,18 +17,16 @@ jobs:
         with:
           name: terraform
           path: ${{ env.TF_HOME }}
-          run-id: ${{ github.event.inputs.ci_run_id }}
+          run-id: ${{ github.event.workflow_run.id }}   # <-- Automatically gets CI run id
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Verify Terraform Artifact Contents
         run: ls ${{ env.TF_HOME }}
 
-
       - name: HashiCorp - Setup Terraform
         uses: hashicorp/setup-terraform@v2.0.3
         with:
           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
-
 
       - name: Run Terraform
         run: |
@@ -38,13 +35,10 @@ jobs:
           terraform workspace select pygoat-test
           terraform apply -auto-approve
           cd -
-          
 
-          
   prod:
-    needs: [test]
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Deploy Step
-        run: |
-          echo 'Hello world!'
+        run: echo 'Hello world!'
