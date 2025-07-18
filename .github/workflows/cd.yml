@@ -1,12 +1,17 @@
 name: CD-pipeline
 
 on:
-  workflow_dispatch:          # Adding this to allow manual/API triggering
+  workflow_dispatch:
+    inputs:
+      ci_run_id:
+        description: 'CI Run ID to pull artifacts from'
+        required: false   # Optional since it's not needed if triggered by workflow_run
+        type: string
+
   workflow_run:
-    workflows: ["CI-Pipeline"]  # Exact name of your CI workflow (case sensitive)
+    workflows: ["CI-Pipeline"]
     types:
       - completed
-
 jobs:
   test:
     runs-on: ubuntu-latest
