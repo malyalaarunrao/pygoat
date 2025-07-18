@@ -1,6 +1,7 @@
 name: CD-pipeline
 
 on:
+  workflow_dispatch:          # Adding this to allow manual/API triggering
   workflow_run:
     workflows: ["CI-Pipeline"]  # Exact name of your CI workflow (case sensitive)
     types:
