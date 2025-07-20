@@ -61,13 +61,27 @@ jobs:
         with:
           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
+
       - name: Run Terraform for PROD
         run: |
           cd ${{ env.TF_HOME }}
           export TF_WORKSPACE="pygoat-prod"
           terraform init
-          terraform apply -var-file="variable_values/prod.tfvars" -input=false -auto-approve
+          terraform apply -var-file="variable_values/prod.tfvars" \
+            -var="app_service_sku=F1" \
+            -input=false -auto-approve
           cd -
+
+
+
+      
+      #- name: Run Terraform for PROD
+       # run: |
+        #  cd ${{ env.TF_HOME }}
+        #  export TF_WORKSPACE="pygoat-prod"
+        #  terraform init
+        #  terraform apply -var-file="variable_values/prod.tfvars" -input=false -auto-approve
+        #  cd -
 
   dast-scan:
     needs: prod
