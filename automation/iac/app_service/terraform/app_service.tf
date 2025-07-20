@@ -8,8 +8,7 @@ module "asp" {
   location            = var.region
   os_type             = "Linux"
 
-  sku_name               = var.app_service_sku
-
+  sku_name               = "B1"
   zone_balancing_enabled = false
   enable_telemetry       = var.enable_telemetry
 }
