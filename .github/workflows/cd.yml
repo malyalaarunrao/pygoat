@@ -5,17 +5,18 @@ on:
     inputs:
       ci_run_id:
         description: 'CI Run ID to pull artifacts from'
-        required: false   # Optional since it's not needed if triggered by workflow_run
+        required: false
         type: string
 
   workflow_run:
     workflows: ["CI-Pipeline"]
     types:
       - completed
+
 jobs:
   test:
     runs-on: ubuntu-latest
-    environment: common    # <-- Add this line to get environment secrets like TF_API_TOKEN
+    environment: common
     env:
       TF_HOME: terraform
     steps:
@@ -24,7 +25,7 @@ jobs:
         with:
           name: terraform
           path: ${{ env.TF_HOME }}
-          run-id: ${{ github.event.workflow_run.id }}   # Automatically get CI run id
+          run-id: ${{ github.event.workflow_run.id || inputs.ci_run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: HashiCorp - Setup Terraform
@@ -32,7 +33,7 @@ jobs:
         with:
           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
-      - name: Run Terraform
+      - name: Run Terraform for TEST
         run: |
           cd ${{ env.TF_HOME }}
           export TF_WORKSPACE="pygoat-test"
@@ -43,7 +44,7 @@ jobs:
   prod:
     needs: test
     runs-on: ubuntu-latest
-    environment: common    # <-- Add this line to get environment secrets like TF_API_TOKEN
+    environment: common
     env:
       TF_HOME: terraform
     steps:
@@ -52,7 +53,7 @@ jobs:
         with:
           name: terraform
           path: ${{ env.TF_HOME }}
-          run-id: ${{ github.event.workflow_run.id }}   # Automatically get CI run id
+          run-id: ${{ github.event.workflow_run.id || inputs.ci_run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: HashiCorp - Setup Terraform
@@ -60,7 +61,7 @@ jobs:
         with:
           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
-      - name: Run Terraform
+      - name: Run Terraform for PROD
         run: |
           cd ${{ env.TF_HOME }}
           export TF_WORKSPACE="pygoat-prod"
@@ -68,4 +69,19 @@ jobs:
           terraform apply -var-file="variable_values/prod.tfvars" -input=false -auto-approve
           cd -
 
-        
+  dast-scan:
+    needs: prod
+    runs-on: ubuntu-latest
+    steps:
+      - name: OWASP ZAP DAST Scan
+        uses: zaproxy/action-baseline@v0.10.0
+        with:
+          target: 'http://app-arun-devsecopsapp-prod.azurewebsites.net'  
+          format: sarif
+          output: zap.sarif
+          fail-action: false
+
+      - name: Upload ZAP SARIF Report
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: zap.sarif
